@@ -126,6 +126,26 @@ class TestCeremonyGroupCLI:
             is True
         )
 
+    def test__load_key(self):
+        ceremony.import_ed25519_privatekey_from_file = pretend.call_recorder(
+            lambda *a: {"k": "v"}
+        )
+        result = ceremony._load_key("fake_file", "fake_pass")
+
+        assert result == ceremony.KeySchema(key={'k': 'v'}, error=None)
+        assert ceremony.import_ed25519_privatekey_from_file.calls == [
+            pretend.call("fake_file", "fake_pass")
+        ]
+
+    def test__load_key_crypto_error(self):
+        ceremony.import_ed25519_privatekey_from_file = pretend.raiser(
+            ceremony.CryptoError("Crypto Error tests")
+        )
+        result = ceremony._load_key("fake_file", "fake_pass")
+
+        assert result == ceremony.KeySchema(key=None, error=':cross_mark: [red]Failed[/]: Crypto Error tests Check the password.')
+
+
     def test__bootstrap(self, monkeypatch):
         mocked_request_server = pretend.stub(
             status_code=202,
