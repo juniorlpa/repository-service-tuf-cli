@@ -143,8 +143,12 @@ class TestCeremonyGroupCLI:
         )
         result = ceremony._load_key("fake_file", "fake_pass")
 
-        assert result == ceremony.KeySchema(key=None, error=':cross_mark: [red]Failed[/]: Crypto Error tests Check the password.')
-
+        assert result == ceremony.KeySchema(
+            key=None, error=(
+                f":cross_mark: [red]Failed[/]: Crypto Error"
+                " tests Check the password."
+            )
+        )
 
     def test__bootstrap(self, monkeypatch):
         mocked_request_server = pretend.stub(
